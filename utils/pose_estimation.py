@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-import tempfile
+import base64
 
 def extract_and_visualize_pose(video_path):
     mp_pose = mp.solutions.pose
@@ -22,9 +22,11 @@ def extract_and_visualize_pose(video_path):
                 annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS
             )
 
+        # ✅ 轉成 Base64 而非 hex
         _, buffer = cv2.imencode('.jpg', annotated_image)
-        b64_img = buffer.tobytes().hex()
+        b64_img = base64.b64encode(buffer).decode('utf-8')
         html_frames.append(f'<img src="data:image/jpeg;base64,{b64_img}" style="width:100%">')
 
     cap.release()
     return "<br>".join(html_frames)
+
